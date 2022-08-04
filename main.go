@@ -36,25 +36,32 @@ type Epub struct {
 	} `xml:"metadata"`
 }
 
-func main() {
+func setWorkPath(args []string) (string, error) {
 	var workpath string
 	var err error
 	if len(os.Args) > 1 {
 		workpath, err = filepath.Abs(os.Args[1])
-		if err != nil {
-			log.Fatal(err)
-		}
 	} else {
 		workpath, err = os.Getwd()
-		if err != nil {
-			log.Fatal(err)
-		}
 	}
+	if err != nil {
+		return "", err
+	}
+	return workpath, nil
+}
+
+func main() {
+	workpath, err := setWorkPath(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	filter := workpath + "\\*.epub"
 	epubList, err := filepath.Glob(filter)
 	if err != nil {
 		log.Fatal(err)
 	}
+	
 	fmt.Println(epubList)
 	epub, err := zip.OpenReader("Gideon_la_Novena_Tamsyn_Muir.epub")
 	if err != nil {
